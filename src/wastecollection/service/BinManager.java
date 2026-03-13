@@ -24,7 +24,13 @@ public class BinManager {
         }
         return fullBins;
     }
-//    public ArrayList<WasteBin> getBinsAboveThreshold (double thresholdPercentage) {
-//
-//    }
+    public ArrayList<WasteBin> getBinsAboveThreshold (double thresholdPercentage) {
+        ArrayList<WasteBin> thresholdBin = new ArrayList<>();
+        for (WasteBin i : bins) {
+            if(i.getFillPercentage() >= thresholdPercentage) {
+                thresholdBin.add(i);
+            }
+        }
+        return thresholdBin;
+    }
 }

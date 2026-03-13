@@ -37,14 +37,19 @@ public class Main {
         routeManager.addRoute(route2);
         scheduleManager.addRouteToDay("Monday",route1);
         scheduleManager.addRouteToDay("Tuesday",route2);
-        Bin1.addWaste(40);
+        Bin1.addWaste(200);
         Bin2.addWaste(300);
         Bin3.addWaste(900);
-        ArrayList<WasteBin> fullBins = binManager.getFullBins();
-
+//        ArrayList<WasteBin> fullBins = binManager.getFullBins();
+        ArrayList<WasteBin> fullBins = binManager.getBinsAboveThreshold(80);
         for (WasteBin bin : fullBins) {
-            System.out.println("Full Bin ID: " + bin.getBinId());
+//            System.out.println("Full Bin ID: " + bin.getBinId());
+            System.out.println(
+                    "Bin " + bin.getBinId() +
+                            " needs collection (" + bin.getFillPercentage() + "% full)"
+            );
         }
+
 
         for (Route route : routeManager.getRoutes()) {
             Truck truck = route.getAssignedTruck();
@@ -52,6 +57,7 @@ public class Main {
                 for (WasteBin bin : area.getWasteBins()) {
                     if (bin.isFull()) {
                         truck.loadWaste(bin.getCurrentFillLevel());
+                        bin.emptyBin();
                         System.out.println(
                                 "Truck " + truck.getTruckId() +
                                         " collected waste from Bin " + bin.getBinId() +
@@ -64,3 +70,4 @@ public class Main {
 
     }
 }
+//see change is needed here to
