@@ -29,4 +29,6 @@ public class WasteBin {
     public Waste getWasteType() {
         return wasteType;
     }
+    public void emptyBin() { currentFillLevel = 0; }
+    public double getFillPercentage() { return (currentFillLevel/capacity)*100;}
 }

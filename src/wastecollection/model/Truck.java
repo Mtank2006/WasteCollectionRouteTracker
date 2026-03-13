@@ -31,4 +31,10 @@ public class Truck {
     public Route getAssignedRoute() {
         return assignedRoute;
     }
+    public void collectWasteFromBin(WasteBin bin) {
+        if (getCapacity() >= getCurrentLoad() + bin.getCurrentFillLevel()) {
+            loadWaste(bin.getCurrentFillLevel());
+            bin.emptyBin();
+        }
+    }
 }
