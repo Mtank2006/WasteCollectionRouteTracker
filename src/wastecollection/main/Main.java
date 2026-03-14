@@ -37,8 +37,8 @@ public class Main {
         routeManager.addRoute(route2);
         scheduleManager.addRouteToDay("Monday",route1);
         scheduleManager.addRouteToDay("Tuesday",route2);
-        Bin1.addWaste(200);
-        Bin2.addWaste(300);
+        Bin1.addWaste(20);
+        Bin2.addWaste(280);
         Bin3.addWaste(900);
 //        ArrayList<WasteBin> fullBins = binManager.getFullBins();
         ArrayList<WasteBin> fullBins = binManager.getBinsAboveThreshold(80);
@@ -70,4 +70,3 @@ public class Main {
 
     }
 }
-//see change is needed here to

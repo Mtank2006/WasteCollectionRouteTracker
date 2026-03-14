@@ -5,6 +5,7 @@ public class WasteBin {
     private double capacity;
     private double currentFillLevel;
     private Waste wasteType;
+    private Area area;
     public WasteBin(int binId, double capacity, Waste wasteType) {
         this.binId = binId;
         this.capacity = capacity;
@@ -30,5 +31,7 @@ public class WasteBin {
         return wasteType;
     }
     public void emptyBin() { currentFillLevel = 0; }
-    public double getFillPercentage() { return (currentFillLevel/capacity)*100;}
+    public double getFillPercentage() { return (currentFillLevel/capacity)*100; }
+    public void setArea(Area area) { this.area = area; }
+    public Area getArea() { return area; }
 }

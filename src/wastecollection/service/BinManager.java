@@ -1,6 +1,8 @@
 package wastecollection.service;
 
+import wastecollection.model.Area;
 import wastecollection.model.WasteBin;
+import wastecollection.utils.Helper;
 
 import java.util.ArrayList;
 
@@ -32,5 +34,21 @@ public class BinManager {
             }
         }
         return thresholdBin;
+    }
+    public Area findNearestAreaWithUrgentBins(Area currentArea, double threshold) {
+        Area nearestArea = null;
+        double shortestDistance = Double.MAX_VALUE;
+        for (WasteBin i : bins) {
+            if(i.getFillPercentage() >= threshold) {
+                Helper helper = new Helper();
+                Area area = bin.getArea();
+                double distance = helper.calculateDistance(currentArea.getxCoordinate(),currentArea.getyCoordinate(),area.getxCoordinate(),area.getyCoordinate());
+                if (distance < shortestDistance) {
+                    shortestDistance = distance;
+                    nearestArea = area;
+                }
+            }
+            return nearestArea;
+        }
     }
 }
