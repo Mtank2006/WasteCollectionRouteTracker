@@ -38,7 +38,7 @@ public class Area {
         return areaName;
     }
 
-    public double getxCoordinate() { return xCoordinate; }
+    public double getXCoordinate() { return xCoordinate; }
 
-    public double getyCoordinate() { return yCoordinate; }
+    public double getYCoordinate() { return yCoordinate; }
 }

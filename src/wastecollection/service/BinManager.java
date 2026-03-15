@@ -5,6 +5,7 @@ import wastecollection.model.WasteBin;
 import wastecollection.utils.Helper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class BinManager {
     private ArrayList<WasteBin> bins;
@@ -40,15 +41,25 @@ public class BinManager {
         double shortestDistance = Double.MAX_VALUE;
         for (WasteBin i : bins) {
             if(i.getFillPercentage() >= threshold) {
-                Helper helper = new Helper();
-                Area area = bin.getArea();
-                double distance = helper.calculateDistance(currentArea.getxCoordinate(),currentArea.getyCoordinate(),area.getxCoordinate(),area.getyCoordinate());
+                Area area = i.getArea();
+                double distance = Helper.calculateDistance(currentArea.getXCoordinate(),currentArea.getYCoordinate(),area.getXCoordinate(),area.getYCoordinate());
                 if (distance < shortestDistance) {
                     shortestDistance = distance;
                     nearestArea = area;
                 }
             }
-            return nearestArea;
         }
+        return nearestArea;
+    }
+    public ArrayList<WasteBin> getBinsSortedByPriority() {
+        ArrayList<WasteBin> sortedBins = new ArrayList<>(bins);
+        for (int i = 0; i < sortedBins.size();i++) {
+            for (int j = i+1; j < sortedBins.size(); j++) {
+                if (sortedBins.get(i).getFillPercentage() < sortedBins.get(j).getFillPercentage()) {
+                    Collections.swap(sortedBins,i,j);
+                }
+            }
+        }
+        return sortedBins;
     }
 }
