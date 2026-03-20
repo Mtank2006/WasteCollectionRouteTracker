@@ -5,6 +5,7 @@ public class Truck {
     private double capacity;
     private double currentLoad;
     private Route assignedRoute;
+    private Area currentArea;
     public Truck(int truckId, double capacity) {
         this.truckId = truckId;
         this.capacity = capacity;
@@ -36,5 +37,12 @@ public class Truck {
             loadWaste(bin.getCurrentFillLevel());
             bin.emptyBin();
         }
+    }
+    public void setCurrentArea(Area area) {
+        currentArea = area;
+    }
+
+    public Area getCurrentArea() {
+        return currentArea;
     }
 }

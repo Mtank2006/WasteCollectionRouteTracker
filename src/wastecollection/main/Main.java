@@ -40,6 +40,8 @@ public class Main {
         Bin1.addWaste(160);
         Bin2.addWaste(250);
         Bin3.addWaste(280);
+        truck1.setCurrentArea(route1.getAreas().get(0));
+        truck2.setCurrentArea(route2.getAreas().get(0));
 //        ArrayList<WasteBin> priorityBins = binManager.getFullBins();
         ArrayList<WasteBin> priorityBins = binManager.getBinsAboveThreshold(80);
         for (WasteBin bin : priorityBins) {
