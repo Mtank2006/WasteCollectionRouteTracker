@@ -69,45 +69,83 @@ public class Main {
 //            }
 //        }
 //        With priority given to bins;
-        double threshold = 80;
+//        double threshold = 80;
 
 // get bins sorted by priority
-        priorityBins = binManager.getBinsSortedByPriority();
+//        priorityBins = binManager.getBinsSortedByPriority();
+//
+//        for (Truck truck : fleetManager.getTrucks()) {
+//
+//            for (WasteBin bin : priorityBins) {
+//                // only collect bins that meet the threshold
+//                if (bin.getFillPercentage() >= threshold && bin.getCurrentFillLevel() > 0) {
+//
+//                    double wasteAmount = bin.getCurrentFillLevel();
+//
+//                    // check truck capacity
+//                    if (truck.getCurrentLoad() + wasteAmount <= truck.getCapacity()) {
+//
+//                        truck.loadWaste(wasteAmount);
+//                        bin.emptyBin();
+//
+//                        System.out.println(
+//                                "Truck " + truck.getTruckId() +
+//                                        " collected waste from Bin " + bin.getBinId() +
+//                                        " (" + wasteAmount + " units)"
+//                        );
+//                    }
+//
+//                    // stop using this truck if it becomes full
+//                    if (truck.isFull()) {
+//                        System.out.println(
+//                                "Truck " + truck.getTruckId() +
+//                                        " is full. Returning to depot."
+//                        );
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+        double threshold = 80;
 
-        for (Truck truck : fleetManager.getTrucks()) {
+// use one truck at a time (can extend later to multiple trucks)
+        Truck truck = fleetManager.getTrucks().get(0);
 
-            for (WasteBin bin : priorityBins) {
+        while (true) {
 
-                // only collect bins that meet the threshold
-                if (bin.getFillPercentage() >= threshold && bin.getCurrentFillLevel() > 0) {
+            // Step 3: find best bin based on priority + distance
+            WasteBin bestBin = binManager.findBestBin(truck.getCurrentArea(), threshold);
 
-                    double wasteAmount = bin.getCurrentFillLevel();
-
-                    // check truck capacity
-                    if (truck.getCurrentLoad() + wasteAmount <= truck.getCapacity()) {
-
-                        truck.loadWaste(wasteAmount);
-                        bin.emptyBin();
-
-                        System.out.println(
-                                "Truck " + truck.getTruckId() +
-                                        " collected waste from Bin " + bin.getBinId() +
-                                        " (" + wasteAmount + " units)"
-                        );
-                    }
-
-                    // stop using this truck if it becomes full
-                    if (truck.isFull()) {
-                        System.out.println(
-                                "Truck " + truck.getTruckId() +
-                                        " is full. Returning to depot."
-                        );
-                        break;
-                    }
-                }
+            // stop if no valid bin found
+            if (bestBin == null) {
+                System.out.println("No more bins above threshold.");
+                break;
             }
-        }
 
+            double wasteAmount = bestBin.getCurrentFillLevel();
+
+            // check capacity
+            if (truck.getCurrentLoad() + wasteAmount > truck.getCapacity()) {
+                System.out.println("Truck " + truck.getTruckId() + " is full. Returning to depot.");
+                break;
+            }
+
+            // collect waste
+            truck.loadWaste(wasteAmount);
+
+            Area area = bestBin.getArea();
+            bestBin.emptyBin();
+
+            System.out.println(
+                    "Truck " + truck.getTruckId() +
+                            " moved to Area " + area.getAreaName() +
+                            " and collected waste from Bin " + bestBin.getBinId() +
+                            " (" + wasteAmount + " units)"
+            );
+
+            // update truck location (VERY IMPORTANT)
+            truck.setCurrentArea(area);
+        }
 
     }
 }

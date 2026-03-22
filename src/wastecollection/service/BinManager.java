@@ -62,4 +62,37 @@ public class BinManager {
         }
         return sortedBins;
     }
+    public WasteBin findBestBin(Area currentArea, double threshold) {
+
+        WasteBin bestBin = null;
+        double bestScore = Double.NEGATIVE_INFINITY;
+
+        for (WasteBin bin : bins) {
+
+            // check threshold and ensure bin is not empty
+            if (bin.getFillPercentage() >= threshold && bin.getCurrentFillLevel() > 0) {
+
+                Area area = bin.getArea();
+
+                double distance = Helper.calculateDistance(
+                        currentArea.getXCoordinate(),
+                        currentArea.getYCoordinate(),
+                        area.getXCoordinate(),
+                        area.getYCoordinate()
+                );
+
+                double priority = bin.getFillPercentage();
+
+                // score calculation (priority - distance)
+                double score = priority - distance;
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestBin = bin;
+                }
+            }
+        }
+
+        return bestBin;
+    }
 }
