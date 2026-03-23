@@ -12,7 +12,7 @@ public class Main {
         FleetManager fleetManager = new FleetManager();
         ScheduleManager scheduleManager = new ScheduleManager();
         Area residential = new Area(1,"Residential",2,3);
-        Area market = new Area(2,"market",8,6);
+        Area market = new Area(2,"Market",8,6);
         WasteBin Bin1 = new WasteBin(101,200,new OrganicWaste());
         WasteBin Bin2 = new WasteBin(102,300,new PlasticWaste());
         WasteBin Bin3 = new WasteBin(103,300,new PaperWaste());
@@ -23,7 +23,7 @@ public class Main {
         binManager.addBin(Bin1);
         binManager.addBin(Bin2);
         binManager.addBin(Bin3);
-        Truck truck1 = new Truck(101,500);
+        Truck truck1 = new Truck(101,300);
         Truck truck2 = new Truck(102,600);
         fleetManager.addTruck(truck1);
         fleetManager.addTruck(truck2);
