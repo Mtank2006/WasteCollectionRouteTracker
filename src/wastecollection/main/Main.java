@@ -29,7 +29,7 @@ public class Main {
         binManager.addBin(Bin2);
         binManager.addBin(Bin3);
 
-        Truck truck1 = new Truck(101,300);
+        Truck truck1 = new Truck(101,500);
         Truck truck2 = new Truck(102,600);
 
         fleetManager.addTruck(truck1);
@@ -58,6 +58,8 @@ public class Main {
 
 
         ArrayList<WasteBin> priorityBins = binManager.getBinsAboveThreshold(80);
+        ArrayList<WasteBin> remainingBins = new ArrayList<>(priorityBins);
+
         for (WasteBin bin : priorityBins) {
 
             System.out.println(
@@ -66,82 +68,104 @@ public class Main {
             );
         }
         double threshold = 80;
+
         AssignmentManager assignmentManager = new AssignmentManager(fleetManager.getTrucks().size());
-// Assign bins to trucks
-        assignmentManager.assignBinsToTrucks(
-                fleetManager.getTrucks(),
-                priorityBins
-        );
+        // Assign bins to trucks
+        assignmentManager.assignBinsToTrucks(fleetManager.getTrucks(), priorityBins);
 
-        ArrayList<ArrayList<WasteBin>> assignments =
-                assignmentManager.getTruckAssignments();
+        ArrayList<ArrayList<WasteBin>> assignments = assignmentManager.getTruckAssignments();
 
-// Loop through ALL trucks
-        for (int i = 0; i < fleetManager.getTrucks().size(); i++) {
+        ArrayList<Truck> activeTrucks = new ArrayList<>(fleetManager.getTrucks());
 
-            Truck truck = fleetManager.getTrucks().get(i);
-            ArrayList<WasteBin> assignedBins = assignments.get(i);
+        // Loop through ALL trucks
 
-            while (true) {
+        while (!remainingBins.isEmpty() && !activeTrucks.isEmpty()) {
 
-                WasteBin bestBin = null;
-                double bestScore = Double.NEGATIVE_INFINITY;
+            assignmentManager.assignBinsToTrucks(activeTrucks, remainingBins);
+            assignments = assignmentManager.getTruckAssignments();
+            ArrayList<Truck> trucksToRemove = new ArrayList<>();
 
-                // IMPORTANT: ONLY search inside assignedBins
-                for (WasteBin bin : assignedBins) {
+            for (int i = 0; i < activeTrucks.size(); i++) {
 
-                    if (bin.getFillPercentage() >= threshold &&
-                            bin.getCurrentFillLevel() > 0) {
+                Truck truck = activeTrucks.get(i);
 
-                        Area binArea = bin.getArea();
+                while (true) {
 
-                        double distance = Helper.calculateDistance(
-                                truck.getCurrentArea().getXCoordinate(),
-                                truck.getCurrentArea().getYCoordinate(),
-                                binArea.getXCoordinate(),
-                                binArea.getYCoordinate()
-                        );
+                    WasteBin bestBin = null;
+                    double bestScore = Double.NEGATIVE_INFINITY;
 
-                        double priority = bin.getFillPercentage();
-                        double score = priority - distance;
+                    // IMPORTANT: ONLY search inside assignedBins
+                    for (WasteBin bin : assignments.get(i)) {
 
-                        if (score > bestScore) {
-                            bestScore = score;
-                            bestBin = bin;
+                        if (bin.getCurrentFillLevel() > 0) {
+
+                            Area binArea = bin.getArea();
+
+                            double distance = Helper.calculateDistance(
+                                    truck.getCurrentArea().getXCoordinate(),
+                                    truck.getCurrentArea().getYCoordinate(),
+                                    binArea.getXCoordinate(),
+                                    binArea.getYCoordinate()
+                            );
+
+                            double priority = bin.getFillPercentage();
+                            double score = priority - distance;
+
+                            if (score > bestScore) {
+                                bestScore = score;
+                                bestBin = bin;
+                            }
                         }
                     }
+
+                    // stop if no valid bin
+                    if (bestBin == null) {
+                        System.out.println("Truck " + truck.getTruckId() + " has no more assigned bins.");
+                        break;
+                    }
+
+                    double wasteAmount = bestBin.getCurrentFillLevel();
+
+                    // capacity check
+                    if (truck.getCurrentLoad() + wasteAmount > truck.getCapacity()) {
+                        System.out.println("Truck " + truck.getTruckId() + " is full. Returning to depot.");
+                        break;
+                    }
+
+                    // collect waste
+                    truck.loadWaste(wasteAmount);
+                    bestBin.emptyBin();
+                    remainingBins.remove(bestBin);
+
+                    Area area = bestBin.getArea();
+
+                    System.out.println(
+                            "Truck " + truck.getTruckId() +
+                                    " moved to Area " + area.getAreaName() +
+                                    " and collected waste from Bin " + bestBin.getBinId() +
+                                    " (" + wasteAmount + " units)"
+                    );
+
+                    // update truck location
+                    truck.setCurrentArea(area);
+
+                    if (truck.isFull() && !trucksToRemove.contains(truck)) {
+                        trucksToRemove.add(truck);
+                    }
+
                 }
 
-                // stop if no valid bin
-                if (bestBin == null) {
-                    System.out.println("Truck " + truck.getTruckId() + " has no more assigned bins.");
-                    break;
-                }
-
-                double wasteAmount = bestBin.getCurrentFillLevel();
-
-                // capacity check
-                if (truck.getCurrentLoad() + wasteAmount > truck.getCapacity()) {
-                    System.out.println("Truck " + truck.getTruckId() + " is full. Returning to depot.");
-                    break;
-                }
-
-                // collect waste
-                truck.loadWaste(wasteAmount);
-                bestBin.emptyBin();
-
-                Area area = bestBin.getArea();
-
-                System.out.println(
-                        "Truck " + truck.getTruckId() +
-                                " moved to Area " + area.getAreaName() +
-                                " and collected waste from Bin " + bestBin.getBinId() +
-                                " (" + wasteAmount + " units)"
-                );
-
-                // update truck location
-                truck.setCurrentArea(area);
             }
+
+            activeTrucks.removeAll(trucksToRemove);
+
+            remainingBins.clear();
+            for (WasteBin bin : binManager.getBins()) {
+                if (bin.getCurrentFillLevel() > 0) {
+                    remainingBins.add(bin);
+                }
+            }
+
         }
     }
 }
