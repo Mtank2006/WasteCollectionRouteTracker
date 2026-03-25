@@ -17,6 +17,9 @@ public class AssignmentManager {
     }
     
     public void assignBinsToTrucks(ArrayList<Truck> trucks, ArrayList<WasteBin> bins) {
+        for (ArrayList<WasteBin> i : truckAssignments) {
+            i.clear();
+        }
         for (WasteBin bin : bins) {
             int nearestTruckIndex = -1;
             double shortestDistance = Double.MAX_VALUE;
