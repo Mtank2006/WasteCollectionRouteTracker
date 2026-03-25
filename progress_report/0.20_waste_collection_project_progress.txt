@@ -1,0 +1,120 @@
+Waste Collection Route Tracker – Updated Progress Summary
+
+Project Title: Waste Collection Route Tracker
+
+Core System: Smart Waste Collection Route Manager
+
+  ---------------------------------------------------------------------
+  1. OVERVIEW
+  ---------------------------------------------------------------------
+  This project simulates a smart municipal waste collection system
+  using Java. It models areas, waste bins, trucks, routes, and
+  scheduling while applying object-oriented design and algorithmic
+  optimization.
+
+  ---------------------------------------------------------------------
+
+2. ARCHITECTURE
+
+Root Package: wastecollection
+
+Packages: - model → system entities - service → system logic - utils →
+helper functions - main → simulation entry point
+
+  ---------------------------------------------------------------------
+  3. MODEL LAYER
+  ---------------------------------------------------------------------
+  Implemented Classes:
+
+  Area - areaId, areaName, xCoordinate, yCoordinate - holds list of
+  WasteBins
+
+  Waste (abstract) - wasteCategory
+
+  Subclasses: - OrganicWaste - PlasticWaste - MetalWaste - PaperWaste
+
+  WasteBin - binId, capacity, currentFillLevel, wasteType, area -
+  addWaste(), isFull(), emptyBin(), getFillPercentage()
+
+  Truck - truckId, capacity, currentLoad, assignedRoute, currentArea -
+  loadWaste(), collectWasteFromBin(), assignRoute(), isFull() -
+  setCurrentArea(), getCurrentArea()
+
+  Route - routeId, assignedTruck, areas - addArea(), assignTruck()
+  ---------------------------------------------------------------------
+
+4. SERVICE LAYER
+
+RouteManager - manages routes
+
+BinManager - manages bins - getBinsAboveThreshold() -
+getBinsSortedByPriority() - findBestBin()
+
+FleetManager - manages trucks
+
+ScheduleManager - uses HashMap<String, ArrayList> for scheduling
+
+AssignmentManager (NEW) - assigns bins to nearest trucks - uses
+ArrayList<ArrayList>
+
+  -------------------------------
+  5. ALGORITHMIC IMPLEMENTATION
+  -------------------------------
+
+Step 1 – Truck Location Tracking - Trucks now track currentArea
+
+Step 2 – Distance Calculation - Implemented Helper.calculateDistance() -
+Euclidean distance used
+
+Step 3 – Priority + Distance Scoring - score = fillPercentage − distance
+
+Step 4 – Greedy Iterative Collection - while loop selects best bin each
+iteration - updates truck location dynamically - respects capacity
+constraints
+
+Step 5 – Multi-Truck Coordination - AssignmentManager assigns bins to
+nearest truck - each truck operates only on assigned bins
+
+  ---------------------------------------------------------------------
+  6. SYSTEM BEHAVIOR (CURRENT)
+  ---------------------------------------------------------------------
+  Waste generated ↓ Bins fill up ↓ System detects bins ≥ threshold ↓
+  Bins assigned to nearest trucks ↓ Each truck runs greedy routing ↓
+  Truck moves between areas ↓ Waste collected and bins emptied ↓ Truck
+  stops when full or no bins remain
+
+  ---------------------------------------------------------------------
+
+7. JAVA CONCEPTS USED
+
+-   Classes and Objects
+-   Encapsulation
+-   Inheritance
+-   Abstraction
+-   Polymorphism
+-   ArrayList
+-   HashMap (used with permission)
+-   Packages
+
+  ------------------------------
+  8. CURRENT PROJECT STRUCTURE
+  ------------------------------
+
+wastecollection ├ model │ Area │ Waste │ OrganicWaste │ PlasticWaste │
+MetalWaste │ PaperWaste │ WasteBin │ Truck │ Route │ ├ service │
+RouteManager │ BinManager │ FleetManager │ ScheduleManager │
+AssignmentManager │ ├ utils │ Helper │ └ main Main
+
+  ---------------------------------------------------------------------
+  9. CURRENT LEVEL
+  ---------------------------------------------------------------------
+  The project now implements:
+
+  - Smart bin detection - Priority-based selection - Distance-aware
+  routing - Greedy optimization - Multi-truck coordination
+
+  This forms a simplified version of a: Multi-Agent Vehicle Routing
+  System
+  ---------------------------------------------------------------------
+
+END OF CURRENT STATUS
