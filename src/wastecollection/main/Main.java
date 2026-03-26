@@ -2,7 +2,7 @@ package wastecollection.main;
 
 import wastecollection.model.*;
 import wastecollection.service.*;
-import wastecollection.utils.Helper;
+import wastecollection.utils.*;
 
 import java.util.ArrayList;
 
@@ -13,6 +13,7 @@ public class Main {
         BinManager binManager = new BinManager();
         FleetManager fleetManager = new FleetManager();
         ScheduleManager scheduleManager = new ScheduleManager();
+        Helper helper = new Helper();
 
         Area residential = new Area(1,"Residential",2,3);
         Area market = new Area(2,"Market",8,6);
@@ -60,29 +61,34 @@ public class Main {
         ArrayList<WasteBin> priorityBins = binManager.getBinsAboveThreshold(80);
         ArrayList<WasteBin> remainingBins = new ArrayList<>(priorityBins);
 
+        helper.printSection("DETECTION");
         for (WasteBin bin : priorityBins) {
-
-            System.out.println(
-                    "Bin " + bin.getBinId() +
-                            " needs collection (" + bin.getFillPercentage() + "% full)"
-            );
+            System.out.println("Bin " + bin.getBinId() + " needs collection (" + bin.getFillPercentage() + "% full)");
         }
-        double threshold = 80;
+
+        int totalBins = binManager.getBins().size();
+        int binCollected = 0;
+        double totalWaste = 0;
+
+
 
         AssignmentManager assignmentManager = new AssignmentManager(fleetManager.getTrucks().size());
         // Assign bins to trucks
         assignmentManager.assignBinsToTrucks(fleetManager.getTrucks(), priorityBins);
 
-        ArrayList<ArrayList<WasteBin>> assignments = assignmentManager.getTruckAssignments();
+//        ArrayList<ArrayList<WasteBin>> assignments = assignmentManager.getTruckAssignments();
 
         ArrayList<Truck> activeTrucks = new ArrayList<>(fleetManager.getTrucks());
 
         // Loop through ALL trucks
 
+
+//        helper.printSection("INITIALIZATION");
+
         while (!remainingBins.isEmpty() && !activeTrucks.isEmpty()) {
 
             assignmentManager.assignBinsToTrucks(activeTrucks, remainingBins);
-            assignments = assignmentManager.getTruckAssignments();
+            ArrayList<ArrayList<WasteBin>> assignments = assignmentManager.getTruckAssignments();
             ArrayList<Truck> trucksToRemove = new ArrayList<>();
 
             for (int i = 0; i < activeTrucks.size(); i++) {
@@ -96,12 +102,12 @@ public class Main {
 
                     // IMPORTANT: ONLY search inside assignedBins
                     for (WasteBin bin : assignments.get(i)) {
-
+                        
                         if (bin.getCurrentFillLevel() > 0) {
 
                             Area binArea = bin.getArea();
 
-                            double distance = Helper.calculateDistance(
+                            double distance = helper.calculateDistance(
                                     truck.getCurrentArea().getXCoordinate(),
                                     truck.getCurrentArea().getYCoordinate(),
                                     binArea.getXCoordinate(),
@@ -136,15 +142,19 @@ public class Main {
                     truck.loadWaste(wasteAmount);
                     bestBin.emptyBin();
                     remainingBins.remove(bestBin);
-
                     Area area = bestBin.getArea();
+                    binCollected++;
+                    totalWaste += wasteAmount;
 
-                    System.out.println(
-                            "Truck " + truck.getTruckId() +
-                                    " moved to Area " + area.getAreaName() +
-                                    " and collected waste from Bin " + bestBin.getBinId() +
-                                    " (" + wasteAmount + " units)"
-                    );
+
+//                    System.out.println(
+//                            "Truck " + truck.getTruckId() +
+//                                    " moved to Area " + area.getAreaName() +
+//                                    " and collected waste from Bin " + bestBin.getBinId() +
+//                                    " (" + wasteAmount + " units)"
+//                    );
+                    helper.printSection("COLLECTION");
+                    helper.printCollectionEvent(truck,area,bestBin,wasteAmount);
 
                     // update truck location
                     truck.setCurrentArea(area);
@@ -160,6 +170,8 @@ public class Main {
             activeTrucks.removeAll(trucksToRemove);
 
             remainingBins.clear();
+
+//            helper.printSection("REASSIGNMENT");
             for (WasteBin bin : binManager.getBins()) {
                 if (bin.getCurrentFillLevel() > 0) {
                     remainingBins.add(bin);
@@ -167,5 +179,8 @@ public class Main {
             }
 
         }
+
+        helper.printSummary(fleetManager.getTrucks(),totalBins,binCollected,totalWaste);
+
     }
 }
