@@ -18,7 +18,7 @@ public class Truck {
         return currentLoad >= capacity;
     }
     public void assignRoute(Route route) {
-        assignedRoute = route;
+        this.assignedRoute = route;
     }
     public int getTruckId() {
        return truckId;
@@ -39,9 +39,8 @@ public class Truck {
         }
     }
     public void setCurrentArea(Area area) {
-        currentArea = area;
+        this.currentArea = area;
     }
-
     public Area getCurrentArea() {
         return currentArea;
     }

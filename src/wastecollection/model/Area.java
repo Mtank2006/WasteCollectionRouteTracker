@@ -17,28 +17,19 @@ public class Area {
         this.yCoordinate = yCoordinate;
         this.wasteBins = new ArrayList<>();
     }
-
-
     public void addWasteBin(WasteBin bin) {
-        wasteBins.add(bin); bin.setArea(this);
+        wasteBins.add(bin);
+        bin.setArea(this);
     }
-
-
     public ArrayList<WasteBin> getWasteBins() {
         return wasteBins;
     }
-
-
     public int getAreaId() {
         return areaId;
     }
-
-
     public String getAreaName() {
         return areaName;
     }
-
     public double getXCoordinate() { return xCoordinate; }
-
     public double getYCoordinate() { return yCoordinate; }
 }
