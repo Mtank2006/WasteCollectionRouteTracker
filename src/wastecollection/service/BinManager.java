@@ -36,6 +36,7 @@ public class BinManager {
         }
         return thresholdBin;
     }
+    // no use
     public Area findNearestAreaWithUrgentBins(Area currentArea, double threshold) {
         Area nearestArea = null;
         double shortestDistance = Double.MAX_VALUE;
@@ -51,6 +52,7 @@ public class BinManager {
         }
         return nearestArea;
     }
+    // no use
     public ArrayList<WasteBin> getBinsSortedByPriority() {
         ArrayList<WasteBin> sortedBins = new ArrayList<>(bins);
         for (int i = 0; i < sortedBins.size();i++) {
@@ -62,14 +64,14 @@ public class BinManager {
         }
         return sortedBins;
     }
-    public WasteBin findBestBin(Area currentArea, double threshold) {
+    // may use it later to reduce code in main , leave it now
+     public WasteBin findBestBin(Area currentArea, double threshold) {
 
         WasteBin bestBin = null;
         double bestScore = Double.NEGATIVE_INFINITY;
 
         for (WasteBin bin : bins) {
 
-            // check threshold and ensure bin is not empty
             if (bin.getFillPercentage() >= threshold && bin.getCurrentFillLevel() > 0) {
 
                 Area area = bin.getArea();
@@ -83,7 +85,6 @@ public class BinManager {
 
                 double priority = bin.getFillPercentage();
 
-                // score calculation (priority - distance)
                 double score = priority - distance;
 
                 if (score > bestScore) {
@@ -92,7 +93,6 @@ public class BinManager {
                 }
             }
         }
-
         return bestBin;
     }
 }
