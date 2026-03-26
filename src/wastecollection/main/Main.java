@@ -44,6 +44,9 @@ public class Main {
         route1.assignTruck(truck1);
         route2.assignTruck(truck2);
 
+        truck1.assignRoute(route1);
+        truck2.assignRoute(route2);
+
         routeManager.addRoute(route1);
         routeManager.addRoute(route2);
 
@@ -54,9 +57,14 @@ public class Main {
         Bin2.addWaste(250);
         Bin3.addWaste(280);
 
+        double priorityWeight = 1.5;
+        double distanceWeight = 1.0;
+
         truck1.setCurrentArea(route1.getAreas().get(0));
         truck2.setCurrentArea(route2.getAreas().get(0));
 
+        System.out.println("Using weights → Priority: " + priorityWeight + " , Distance: " + distanceWeight);
+        helper.printSection("INITIALIZATION");
 
         ArrayList<WasteBin> priorityBins = binManager.getBinsAboveThreshold(80);
         ArrayList<WasteBin> remainingBins = new ArrayList<>(priorityBins);
@@ -67,25 +75,15 @@ public class Main {
         }
 
         int totalBins = binManager.getBins().size();
-        int binCollected = 0;
+        int binsCollected = 0;
         double totalWaste = 0;
 
-
-
         AssignmentManager assignmentManager = new AssignmentManager(fleetManager.getTrucks().size());
-        // Assign bins to trucks
-        assignmentManager.assignBinsToTrucks(fleetManager.getTrucks(), priorityBins);
-
-//        ArrayList<ArrayList<WasteBin>> assignments = assignmentManager.getTruckAssignments();
-
         ArrayList<Truck> activeTrucks = new ArrayList<>(fleetManager.getTrucks());
 
-        // Loop through ALL trucks
-
-
-//        helper.printSection("INITIALIZATION");
-
         while (!remainingBins.isEmpty() && !activeTrucks.isEmpty()) {
+
+            helper.printSection("COLLECTION");
 
             assignmentManager.assignBinsToTrucks(activeTrucks, remainingBins);
             ArrayList<ArrayList<WasteBin>> assignments = assignmentManager.getTruckAssignments();
@@ -94,20 +92,20 @@ public class Main {
             for (int i = 0; i < activeTrucks.size(); i++) {
 
                 Truck truck = activeTrucks.get(i);
+                Route route = truck.getAssignedRoute();
+                ArrayList<Area> routeAreas = route.getAreas();
 
                 while (true) {
 
                     WasteBin bestBin = null;
                     double bestScore = Double.NEGATIVE_INFINITY;
 
-                    // IMPORTANT: ONLY search inside assignedBins
                     for (WasteBin bin : assignments.get(i)) {
-                        
-                        if (bin.getCurrentFillLevel() > 0) {
+
+                        if (bin.getCurrentFillLevel() > 0 && routeAreas.contains(bin.getArea())) {
 
                             Area binArea = bin.getArea();
-
-                            double distance = helper.calculateDistance(
+                            double distance = Helper.calculateDistance(
                                     truck.getCurrentArea().getXCoordinate(),
                                     truck.getCurrentArea().getYCoordinate(),
                                     binArea.getXCoordinate(),
@@ -115,7 +113,7 @@ public class Main {
                             );
 
                             double priority = bin.getFillPercentage();
-                            double score = priority - distance;
+                            double score = ( priority * priorityWeight ) - ( distance * distanceWeight);
 
                             if (score > bestScore) {
                                 bestScore = score;
@@ -124,7 +122,31 @@ public class Main {
                         }
                     }
 
-                    // stop if no valid bin
+                    if (bestBin == null) {
+                        for (WasteBin bin : assignments.get(i)) {
+
+                            if (bin.getCurrentFillLevel() > 0) {
+                                Area binArea = bin.getArea();
+                                double distance = Helper.calculateDistance(
+                                        truck.getCurrentArea().getXCoordinate(),
+                                        truck.getCurrentArea().getYCoordinate(),
+                                        binArea.getXCoordinate(),
+                                        binArea.getYCoordinate()
+                                );
+
+                                double priority = bin.getFillPercentage();
+                                double score = ( priority * priorityWeight ) - ( distance * distanceWeight);
+
+                                if (score > bestScore) {
+                                    bestScore = score;
+                                    bestBin = bin;
+                                }
+                            }
+                        }
+                    }
+
+                    // stop if no bin is left
+
                     if (bestBin == null) {
                         System.out.println("Truck " + truck.getTruckId() + " has no more assigned bins.");
                         break;
@@ -143,20 +165,12 @@ public class Main {
                     bestBin.emptyBin();
                     remainingBins.remove(bestBin);
                     Area area = bestBin.getArea();
-                    binCollected++;
+                    binsCollected++;
                     totalWaste += wasteAmount;
-
-
-//                    System.out.println(
-//                            "Truck " + truck.getTruckId() +
-//                                    " moved to Area " + area.getAreaName() +
-//                                    " and collected waste from Bin " + bestBin.getBinId() +
-//                                    " (" + wasteAmount + " units)"
-//                    );
-                    helper.printSection("COLLECTION");
                     helper.printCollectionEvent(truck,area,bestBin,wasteAmount);
 
                     // update truck location
+
                     truck.setCurrentArea(area);
 
                     if (truck.isFull() && !trucksToRemove.contains(truck)) {
@@ -171,16 +185,18 @@ public class Main {
 
             remainingBins.clear();
 
-//            helper.printSection("REASSIGNMENT");
             for (WasteBin bin : binManager.getBins()) {
                 if (bin.getCurrentFillLevel() > 0) {
                     remainingBins.add(bin);
                 }
             }
+            if (!remainingBins.isEmpty()) {
+                helper.printSection("REASSIGNMENT");
+            }
 
         }
 
-        helper.printSummary(fleetManager.getTrucks(),totalBins,binCollected,totalWaste);
+        helper.printSummary(fleetManager.getTrucks(),totalBins, binsCollected,totalWaste);
 
     }
 }
