@@ -1,4 +1,4 @@
-package wastecollection.main;
+package wastecollection.app;
 
 import wastecollection.model.*;
 import wastecollection.service.*;
@@ -18,31 +18,37 @@ public class Main {
         ScheduleManager scheduleManager = new ScheduleManager();  // its use has not been implemented. It's not being used in entire project
         Helper helper = new Helper();
 
-
+        helper.printSection("Program has started");
         System.out.println("Select Scenarios (1-5): ");
-        int choice = scanner.nextInt();
+        int choice;
+        String fileName = null;
 
-        String fileName;
-
-        switch (choice) {
-            case 1:
-                fileName = "scenario1.csv";
-                break;
-            case 2:
-                fileName = "scenario2.csv";
-                break;
-            case 3:
-                fileName = "scenario3.csv";
-                break;
-            case 4:
-                fileName = "scenario4.csv";
-                break;
-            case 5:
-                fileName = "scenario5.csv";
-                break;
-            default:
-                System.out.println("Invalid choice. Using default scenario1.");
-                fileName = "scenario1.csv";
+        if (scanner.hasNextInt()) {
+            choice = scanner.nextInt();
+            switch (choice) {
+                case 1:
+                    fileName = "scenario1.csv";
+                    break;
+                case 2:
+                    fileName = "scenario2.csv";
+                    break;
+                case 3:
+                    fileName = "scenario3.csv";
+                    break;
+                case 4:
+                    fileName = "scenario4.csv";
+                    break;
+                case 5:
+                    fileName = "scenario5.csv";
+                    break;
+                default:
+                    System.out.println("Invalid choice. Scenario out of range. Exiting the program");
+                    System.exit(0);
+            }
+        }
+        else {
+            System.out.println("Invalid choice. Input was not a number. Exiting the program");
+            System.exit(0);
         }
 
         ScenarioData data = ScenarioLoader.loadScenario(fileName);
@@ -72,7 +78,8 @@ public class Main {
         for (WasteBin bin : priorityBins) {
             System.out.println("Bin " + bin.getBinId() + " needs collection (" + bin.getFillPercentage() + "% full)");
         }
-
+        System.out.println("These following bins will be prioritised and waste form them will be collected first as they have more waste the threshold ie 80%");
+        System.out.println("After the waste from these bins is collected the waste from other bins will be collected by REASSIGNMENT");
         int totalBins = binManager.getBins().size();
         int binsCollected = 0;
         double totalWaste = 0;
@@ -88,6 +95,7 @@ public class Main {
             ArrayList<ArrayList<WasteBin>> assignments = assignmentManager.getTruckAssignments();
             ArrayList<Truck> trucksToRemove = new ArrayList<>();
 
+            boolean anyCollectionHappened = false;
             for (int i = 0; i < activeTrucks.size(); i++) {
 
                 Truck truck = activeTrucks.get(i);
@@ -145,7 +153,6 @@ public class Main {
                     }
 
                     // stop if no bin is left
-
                     if (bestBin == null) {
                         System.out.println("Truck " + truck.getTruckId() + " has no more assigned bins.");
                         break;
@@ -156,11 +163,15 @@ public class Main {
                     // capacity check
                     if (truck.getCurrentLoad() + wasteAmount > truck.getCapacity()) {
                         System.out.println("Truck " + truck.getTruckId() + " is full. Returning to depot.");
+                        if (!trucksToRemove.contains(truck)) {
+                            trucksToRemove.add(truck);
+                        }
                         break;
                     }
 
                     // collect waste
                     truck.loadWaste(wasteAmount);
+                    anyCollectionHappened = true;
                     bestBin.emptyBin();
                     remainingBins.remove(bestBin);
                     Area area = bestBin.getArea();
@@ -169,7 +180,6 @@ public class Main {
                     helper.printCollectionEvent(truck,area,bestBin,wasteAmount);
 
                     // update truck location
-
                     truck.setCurrentArea(area);
 
                     if (truck.isFull() && !trucksToRemove.contains(truck)) {
@@ -181,6 +191,12 @@ public class Main {
             }
 
             activeTrucks.removeAll(trucksToRemove);
+
+            // for preventing deadlock
+            if (!anyCollectionHappened) {
+                System.out.println("No further collection possible. Exiting");
+                break;
+            }
 
             remainingBins.clear();
 
