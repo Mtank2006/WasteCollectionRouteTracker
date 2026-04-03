@@ -10,18 +10,18 @@ Score: Each bin is assigned a score on the basis of their priority and distance 
 
 
 Classes:-
-Area: 			    Defines an area object.
-Waste: 			    Abstract class for defining waste type of bin. It has sub-classes metalWaste, organicWaste, paperWaste and plasticWaste.
-Route: 			    Creates a route object. A route can have multiple areas in it.
-Truck: 			    Creates a truck object. A truck can be assigned to any route.
-WasteBin: 		    Creates an object which has properties of a dustbin.
-AssignmentManager:	Assigns route to a truck.
+Area: 			Defines an area object.
+Waste: 			Abstract class for defining waste type of bin. It has sub-classes metalWaste, organicWaste, paperWaste and plasticWaste.
+Route: 			Creates a route object. A route can have multiple areas in it.
+Truck: 			Creates a truck object. A truck can be assigned to any route.
+WasteBin: 		Creates an object which has properties of a dustbin.
+AssignmentManager: 	Assigns route to a truck.
 BinManager: 		It has methods for adding a bin to any given list, detecting if waste quantity crosses certain thresholds.
 FleetManager: 		It has methods for adding a truck to any given list.
 RouteManager: 		It has methods for adding a route to any given list.
 ScenarioData: 		It is Collection (return type) for storing data of a scenario.
 ScenarioLoader: 	Creates multiple objects such as areas, trucks, routes, bins, and links them according to the project using ScenarioData.
-Helper: 		  Managers misc stuff like printing output format, distance calculations, etc.
+Helper:			Managers misc stuff like printing output format, distance calculations, etc.
 
 
 Encapsulation:-

@@ -27,10 +27,10 @@ public class Helper {
     }
     public void printTruckStatus(Truck truck) {
         if (truck.isFull()) {
-            System.out.println("Truck " + truck.getTruckId() + " -> FULL " + "(" + truck.getCurrentLoad() + " / " + truck.getCapacity() + "0");
+            System.out.println("Truck " + truck.getTruckId() + " -> FULL " + "(" + truck.getCurrentLoad() + " / " + truck.getCapacity() + ")");
         }
         else {
-            System.out.println("Truck " + truck.getTruckId() + " -> ACTIVE " + "(" + truck.getCurrentLoad() + " / " + truck.getCapacity() + "0");
+            System.out.println("Truck " + truck.getTruckId() + " -> ACTIVE " + "(" + truck.getCurrentLoad() + " / " + truck.getCapacity() + ")");
 
         }
     }

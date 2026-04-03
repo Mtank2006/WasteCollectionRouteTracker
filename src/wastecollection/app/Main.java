@@ -78,7 +78,7 @@ public class Main {
         for (WasteBin bin : priorityBins) {
             System.out.println("Bin " + bin.getBinId() + " needs collection (" + bin.getFillPercentage() + "% full)");
         }
-        System.out.println("These following bins will be prioritised and waste form them will be collected first as they have more waste the threshold ie 80%");
+        System.out.println("These following bins will be prioritised and waste from them will be collected first as they have more waste than the threshold that is 80%");
         System.out.println("After the waste from these bins is collected the waste from other bins will be collected by REASSIGNMENT");
         int totalBins = binManager.getBins().size();
         int binsCollected = 0;
