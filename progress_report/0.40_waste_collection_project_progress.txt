@@ -1,0 +1,80 @@
+Waste Collection Route Tracker – FINAL PROGRESS + SCENARIO SYSTEM
+
+  ---------------------------------------------------------------------
+  1. PROJECT OVERVIEW
+  ---------------------------------------------------------------------
+  A Java-based simulation of a smart waste collection system using: -
+  OOP design - Greedy optimization - Multi-truck coordination - Dynamic
+  reassignment
+
+  ---------------------------------------------------------------------
+
+2. CORE SYSTEM (COMPLETED)
+
+✔ Area, WasteBin, Truck, Route models ✔ BinManager, FleetManager,
+RouteManager, AssignmentManager ✔ Helper utilities
+
+  ---------------------------------------------------------------------
+  3. ALGORITHMIC STEPS
+  ---------------------------------------------------------------------
+  Step 1: Truck location tracking Step 2: Distance calculation
+  (Euclidean) Step 3: Scoring = priority - distance Step 4: Greedy
+  collection loop Step 5: Multi-truck coordination Step 6: Dynamic
+  reassignment
+
+  ---------------------------------------------------------------------
+
+4. ADVANCED FEATURES
+
+✔ Route-aware routing (strict priority) ✔ Weighted scoring system ✔
+Structured output using Helper class
+
+  ---------------------------------------------------------------------
+  5. FINAL SYSTEM TYPE
+  ---------------------------------------------------------------------
+  Adaptive Multi-Agent Weighted Route-Constrained System (Simplified
+  Vehicle Routing Problem Solver)
+
+  ---------------------------------------------------------------------
+
+6. NEW ADDITION – SCENARIO SYSTEM
+
+✔ User selects scenario (1–5) ✔ Data loaded from CSV files ✔ Removed
+hardcoded data
+
+  ---------------------------------------------------------------------
+  7. CSV DESIGN
+  ---------------------------------------------------------------------
+  Single CSV per scenario using TYPE-based rows:
+
+  AREA,areaId,name,x,y TRUCK,truckId,capacity,routeId
+  ROUTE,routeId,areaId BIN,binId,capacity,fill,wasteType,areaId
+  ---------------------------------------------------------------------
+
+8. NEW COMPONENTS
+
+✔ ScenarioLoader (reads CSV, builds objects) ✔ ScenarioData (stores all
+loaded data)
+
+  ---------------------------------------------------------------------
+  9. MAIN FLOW (UPDATED)
+  ---------------------------------------------------------------------
+  User input → select scenario ↓ ScenarioLoader loads CSV ↓ Managers
+  initialized ↓ Simulation runs (unchanged logic)
+
+  ---------------------------------------------------------------------
+
+10. TESTING SETUP
+
+✔ 5 predefined scenarios ✔ Supports varying sizes (small → large) ✔
+Enables easy experimentation
+
+  ---------------------------------------------------------------------
+  11. CURRENT STATUS
+  ---------------------------------------------------------------------
+  ✔ Fully functional ✔ Data-driven ✔ Scalable ✔ Ready for testing,
+  viva, and report
+
+  ---------------------------------------------------------------------
+
+END OF DOCUMENT
