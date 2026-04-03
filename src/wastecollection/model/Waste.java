@@ -1,7 +1,7 @@
 package wastecollection.model;
 
-abstract class Waste {
-    private String wasteCategory;
+public abstract class Waste {
+    public String wasteCategory;
     public Waste(String wasteCategory) {
         this.wasteCategory = wasteCategory;
     }

@@ -5,63 +5,62 @@ import wastecollection.service.*;
 import wastecollection.utils.*;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
 
+        Scanner scanner = new Scanner(System.in);
+
         RouteManager routeManager = new RouteManager();
         BinManager binManager = new BinManager();
         FleetManager fleetManager = new FleetManager();
-        ScheduleManager scheduleManager = new ScheduleManager();
+        ScheduleManager scheduleManager = new ScheduleManager();  // its use has not been implemented. It's not being used in entire project
         Helper helper = new Helper();
 
-        Area residential = new Area(1,"Residential",2,3);
-        Area market = new Area(2,"Market",8,6);
 
-        WasteBin Bin1 = new WasteBin(101,200,new OrganicWaste());
-        WasteBin Bin2 = new WasteBin(102,300,new PlasticWaste());
-        WasteBin Bin3 = new WasteBin(103,300,new PaperWaste());
+        System.out.println("Select Scenarios (1-5): ");
+        int choice = scanner.nextInt();
 
-        residential.addWasteBin(Bin1);
-        residential.addWasteBin(Bin2);
-        market.addWasteBin(Bin3);
+        String fileName;
 
-        binManager.addBin(Bin1);
-        binManager.addBin(Bin2);
-        binManager.addBin(Bin3);
+        switch (choice) {
+            case 1:
+                fileName = "scenario1.csv";
+                break;
+            case 2:
+                fileName = "scenario2.csv";
+                break;
+            case 3:
+                fileName = "scenario3.csv";
+                break;
+            case 4:
+                fileName = "scenario4.csv";
+                break;
+            case 5:
+                fileName = "scenario5.csv";
+                break;
+            default:
+                System.out.println("Invalid choice. Using default scenario1.");
+                fileName = "scenario1.csv";
+        }
 
-        Truck truck1 = new Truck(101,500);
-        Truck truck2 = new Truck(102,600);
+        ScenarioData data = ScenarioLoader.loadScenario(fileName);
 
-        fleetManager.addTruck(truck1);
-        fleetManager.addTruck(truck2);
+        for (WasteBin bin : data.getBins()) {
+            binManager.addBin(bin);
+        }
 
-        Route route1 = new Route(101);
-        Route route2 = new Route(102);
+        for (Truck truck : data.getTrucks()) {
+            fleetManager.addTruck(truck);
+        }
 
-        route1.addArea(residential);
-        route2.addArea(market);
-        route1.assignTruck(truck1);
-        route2.assignTruck(truck2);
-
-        truck1.assignRoute(route1);
-        truck2.assignRoute(route2);
-
-        routeManager.addRoute(route1);
-        routeManager.addRoute(route2);
-
-        scheduleManager.addRouteToDay("Monday",route1);
-        scheduleManager.addRouteToDay("Tuesday",route2);
-
-        Bin1.addWaste(160);
-        Bin2.addWaste(250);
-        Bin3.addWaste(280);
+        for (Route route : data.getRoutes()) {
+            routeManager.addRoute(route);
+        }
 
         double priorityWeight = 1.5;
         double distanceWeight = 1.0;
-
-        truck1.setCurrentArea(route1.getAreas().get(0));
-        truck2.setCurrentArea(route2.getAreas().get(0));
 
         System.out.println("Using weights → Priority: " + priorityWeight + " , Distance: " + distanceWeight);
         helper.printSection("INITIALIZATION");
